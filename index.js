@@ -145,6 +145,7 @@ function setupMiddleware(strategies, options) {
                             userObj = currentUser.get()
                             if (!userObj && !userObj.id) return done("Something went wrong trying to tie #{profile.provider} account to staged user")
                         }
+                        currentUser.set('auth.' + profile.provider + '.accessToken', accessToken);
 
                         // User was found, log in
                         _loginUser(model, userObj, done);
