@@ -21,6 +21,7 @@ module.exports = function(store, strategies, options) {
     // Setup default options
     _.defaults(options, {
         failureRedirect: '/',
+        successRedirect: '/',
         domain: "http://localhost:3000",
         schema: {},
         allowPurl: false
@@ -194,7 +195,7 @@ function setupStaticRoutes(expressApp, strategies, options) {
     expressApp.post('/login',
         passport.authenticate('local', { failureRedirect: options.failureRedirect, failureFlash: true }),
         function(req, res) {
-            res.redirect('/');
+            res.redirect(options.successCallback);
         }
     );
 
@@ -226,7 +227,7 @@ function setupStaticRoutes(expressApp, strategies, options) {
             if (err && !err.notFound) return next(err);
 
             // current user already registered, return
-            if (model.get('users.' + sess.userId + '.auth.local')) return res.redirect('/');
+            if (model.get('users.' + sess.userId + '.auth.local')) return res.redirect(options.successCallback);
 
             if (userObj) {
                 // a user already registered with that name, TODO send error message
@@ -244,7 +245,7 @@ function setupStaticRoutes(expressApp, strategies, options) {
                 model.set('users.' + sess.userId + '.auth.timestamps.created', new Date());
                 req.login(sess.userId, function(err) {
                     if (err) { return next(err); }
-                    return res.redirect('/');
+                    return res.redirect(options.successCallback);
                 });
             }
         });
@@ -272,7 +273,7 @@ function setupStaticRoutes(expressApp, strategies, options) {
         expressApp.get('/auth/' + name + '/callback',
             passport.authenticate(name, { failureRedirect: options.failureRedirect }),
             function(req, res) {
-                res.redirect('/');
+                res.redirect(options.successRedirect);
             });
     });
 
